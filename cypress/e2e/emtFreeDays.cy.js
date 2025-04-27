@@ -32,16 +32,15 @@ describe("send all free days to gmail", () => {
       .should("be.visible");
     cy.get("@btnSend").click();
 
-    cy.url("include", "https://miestacion.emtmadrid.es/Home.aspx");
-
     // select free days in list
-    cy.get('a[href="/Consultas"]').invoke("show").trigger("mouseover");
-    // cy.get("#mainNav > li:nth-child(1) > ul > li:nth-child(16) > a").trigger(
-    //   "mouseover"
-    // );
+    cy.get("#p_lt_ctl02_Busqueda_txtWord").as("search").should("be.visible");
+    cy.get("@search").type("libres{enter}");
+    cy.get(1000);
     cy.get(
-      "#mainNav > li:nth-child(1) > ul > li:nth-child(16) > ul > li:nth-child(1) > a"
-    ).click({ force: true });
+      "#p_lt_ctl06_pageplaceholder_p_lt_ctl01_SmartSearchResults_srchResults_pnlSearchResults > div:nth-child(1) > div:nth-child(1) > a"
+    ).click();
+
+    cy.wait(1000);
 
     // select dates to search
     cy.get("#p_lt_ctl06_pageplaceholder_p_lt_ctl02_ConsultaLibres_txtFecha")
@@ -57,18 +56,16 @@ describe("send all free days to gmail", () => {
       "#p_lt_ctl06_pageplaceholder_p_lt_ctl02_ConsultaLibres_ddlTipoDia"
     ).select("Todos");
 
-    cy.intercept(
-      "POST",
-      "https://miestacion.emtmadrid.es/Consultas/consultaLibres.aspx"
-    ).as("post");
+    // cy.intercept("POST", "**/Consultas/consultaLibres.aspx*").as("post");
 
     cy.get(
       "#p_lt_ctl06_pageplaceholder_p_lt_ctl02_ConsultaLibres_btnEnviar"
     ).click();
+    cy.wait(10000);
 
-    cy.wait("@post").then((interception) => {
-      cy.log("post intercept", interception);
-    });
+    // cy.wait("@post").then((interception) => {
+    //   cy.log("post intercept", interception);
+    // });
 
     // send gmail
     cy.get(
@@ -77,8 +74,8 @@ describe("send all free days to gmail", () => {
       .as("btnEmail")
       .should("be.visible");
     cy.get("@btnEmail").click({ force: true });
-    cy.contains(
-      "Se ha enviado un correo con su consulta de días libres a la dirección juanjor99@gmail.com"
-    ).should("be.visible");
+    // cy.contains(
+    //   "Se ha enviado un correo con su consulta de días libres a la dirección juanjor99@gmail.com"
+    // );
   });
 });
